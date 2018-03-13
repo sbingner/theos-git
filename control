@@ -1,0 +1,11 @@
+Package: git
+Name: Git
+Depends: firmware (>= 3.0)
+Version: 2.16.2
+Architecture: iphoneos-arm
+Description: fast content-addressable filesystem
+Maintainer: Samuel Bingner
+Author: Samuel Bingner
+Section: Data_Storage
+Tag: purpose::console, role::hacker
+Priority: optional

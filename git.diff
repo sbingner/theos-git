@@ -1,0 +1,90 @@
+diff --git a/configure.ac b/configure.ac
+index 7f8415140..e77dba75e 100644
+--- a/configure.ac
++++ b/configure.ac
+@@ -916,17 +918,18 @@ GIT_CONF_SUBST([NO_REGEX])
+ #
+ # Define FREAD_READS_DIRECTORIES if your are on a system which succeeds
+ # when attempting to read from an fopen'ed directory.
+-AC_CACHE_CHECK([whether system succeeds to read fopen'ed directory],
+- [ac_cv_fread_reads_directories],
+-[
+-AC_RUN_IFELSE(
+-	[AC_LANG_PROGRAM([AC_INCLUDES_DEFAULT],
+-		[[
+-		FILE *f = fopen(".", "r");
+-		return f)]])],
+-	[ac_cv_fread_reads_directories=no],
+-	[ac_cv_fread_reads_directories=yes])
+-])
++#AC_CACHE_CHECK([whether system succeeds to read fopened directory],
++# [ac_cv_fread_reads_directories],
++#[
++#AC_RUN_IFELSE(
++#	[AC_LANG_PROGRAM([AC_INCLUDES_DEFAULT],
++#		[[
++#		FILE *f = fopen(".", "r");
++#		return f)]])],
++#	[ac_cv_fread_reads_directories=no],
++#	[ac_cv_fread_reads_directories=yes])
++#])
++ac_cv_fread_reads_directories=yes
+ if test $ac_cv_fread_reads_directories = yes; then
+ 	FREAD_READS_DIRECTORIES=UnfortunatelyYes
+ else
+@@ -937,30 +940,31 @@ GIT_CONF_SUBST([FREAD_READS_DIRECTORIES])
+ # Define SNPRINTF_RETURNS_BOGUS if your are on a system which snprintf()
+ # or vsnprintf() return -1 instead of number of characters which would
+ # have been written to the final string if enough space had been available.
+-AC_CACHE_CHECK([whether snprintf() and/or vsnprintf() return bogus value],
+- [ac_cv_snprintf_returns_bogus],
+-[
+-AC_RUN_IFELSE(
+-	[AC_LANG_PROGRAM([AC_INCLUDES_DEFAULT
+-		#include "stdarg.h"
+-
+-		int test_vsnprintf(char *str, size_t maxsize, const char *format, ...)
+-		{
+-		  int ret;
+-		  va_list ap;
+-		  va_start(ap, format);
+-		  ret = vsnprintf(str, maxsize, format, ap);
+-		  va_end(ap);
+-		  return ret;
+-		}],
+-		[[char buf[6];
+-		  if (test_vsnprintf(buf, 3, "%s", "12345") != 5
+-		      || strcmp(buf, "12")) return 1;
+-		  if (snprintf(buf, 3, "%s", "12345") != 5
+-		      || strcmp(buf, "12")) return 1]])],
+-	[ac_cv_snprintf_returns_bogus=no],
+-	[ac_cv_snprintf_returns_bogus=yes])
+-])
++#AC_CACHE_CHECK([whether snprintf() and/or vsnprintf() return bogus value],
++# [ac_cv_snprintf_returns_bogus],
++#[
++#AC_RUN_IFELSE(
++#	[AC_LANG_PROGRAM([AC_INCLUDES_DEFAULT
++#		#include "stdarg.h"
++#
++#		int test_vsnprintf(char *str, size_t maxsize, const char *format, ...)
++#		{
++#		  int ret;
++#		  va_list ap;
++#		  va_start(ap, format);
++#		  ret = vsnprintf(str, maxsize, format, ap);
++#		  va_end(ap);
++#		  return ret;
++#		}],
++#		[[char buf[6];
++#		  if (test_vsnprintf(buf, 3, "%s", "12345") != 5
++#		      || strcmp(buf, "12")) return 1;
++#		  if (snprintf(buf, 3, "%s", "12345") != 5
++#		      || strcmp(buf, "12")) return 1]])],
++#	[ac_cv_snprintf_returns_bogus=no],
++#	[ac_cv_snprintf_returns_bogus=yes])
++#])
++ac_cv_snprintf_returns_bogus=no
+ if test $ac_cv_snprintf_returns_bogus = yes; then
+ 	SNPRINTF_RETURNS_BOGUS=UnfortunatelyYes
+ else
