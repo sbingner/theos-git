@@ -1,5 +1,5 @@
 target = iphone:clang:10.0:6.0
-ARCHS ?= armv7 armv7s arm64
+ARCHS ?= armv6 arm64
 debug ?= no
 GO_EASY_ON_ME = 1
 include $(THEOS)/makefiles/common.mk
@@ -7,13 +7,14 @@ include $(THEOS)/makefiles/common.mk
 CPROJ = git
 git_TAG = v2.16.2
 
-CFGOPTS = --host=$(subst arm64,aarch64,$(ARCH))-apple-iphoneos --prefix=/usr
+CURL = /Users/sam/source/theos-curl/.theos/_/usr
+CFGOPTS = --host=$(subst arm64,aarch64,$(ARCH))-apple-iphoneos --prefix=/usr --with-curl=$(CURL)
 CC = "xcrun -sdk iphoneos clang"
 CFLAGS = -isysroot $(ISYSROOT) $(SDKFLAGS) $(VERSIONFLAGS) $(_THEOS_TARGET_CC_CFLAGS) -w
 CPP = $(CC) -E
 CPPFLAGS = $(CFLAGS)
 LDFLAGS = -isysroot $(SYSROOT) $(SDKFLAGS) $(VERSIONFLAGS) $(LEGACYFLAGS) -multiply_defined suppress
-MAKEFLAGS = NO_DARWIN_PORTS=1 NO_FINK=1 -j16
+MAKEFLAGS = NO_DARWIN_PORTS=1 NO_FINK=1 NO_INSTALL_HARDLINKS=1 -j16
 
 SIGN_BINS = $(shell find $(THEOS_STAGING_DIR) -type f -perm +111)
 SIGN_LIBS = $(shell find $(THEOS_STAGING_DIR) -name *.so)
@@ -27,7 +28,7 @@ $(CPROJ):
 	$(ECHO_NOTHING)git submodule update $@$(ECHO_END)
 
 %.patched: $(CPROJ).diff $(CPROJ)
-	$(ECHO_NOTHING)cd $@; git checkout $($(CPROJ)_TAG)$(ECHO_END)
+	$(ECHO_NOTHING)cd $(CPROJ); git checkout $($(CPROJ)_TAG)$(ECHO_END)
 	rm -rf $(CPROJ).patched
 	cp -a $(CPROJ) $(CPROJ).patched
 	cd $(CPROJ).patched; patch -p1 < ../$(CPROJ).diff; autoconf
@@ -61,7 +62,7 @@ internal-all:: built
 	@echo Finished copying $(ARCH)
 
 staged: $(foreach ARCH,$(ARCHS), $(ARCH).staged)
-	@echo -n Staging copies of perl...
+	@echo -n Staging copies of $(CPROJ)...
 	$(ECHO_NOTHING)rsync -a $(foreach ARCH,$(ARCHS), $(THEOS_OBJ_DIR)/$(ARCH)/) $(THEOS_STAGING_DIR)$(ECHO_END)
 	@echo done.
 	@echo -n Merging binaries...

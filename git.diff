@@ -1,8 +1,8 @@
 diff --git a/configure.ac b/configure.ac
-index 7f8415140..e77dba75e 100644
+index 7f8415140..ef2e0a39c 100644
 --- a/configure.ac
 +++ b/configure.ac
-@@ -916,17 +918,18 @@ GIT_CONF_SUBST([NO_REGEX])
+@@ -916,17 +916,18 @@ GIT_CONF_SUBST([NO_REGEX])
  #
  # Define FREAD_READS_DIRECTORIES if your are on a system which succeeds
  # when attempting to read from an fopen'ed directory.
@@ -32,7 +32,7 @@ index 7f8415140..e77dba75e 100644
  if test $ac_cv_fread_reads_directories = yes; then
  	FREAD_READS_DIRECTORIES=UnfortunatelyYes
  else
-@@ -937,30 +940,31 @@ GIT_CONF_SUBST([FREAD_READS_DIRECTORIES])
+@@ -937,30 +938,31 @@ GIT_CONF_SUBST([FREAD_READS_DIRECTORIES])
  # Define SNPRINTF_RETURNS_BOGUS if your are on a system which snprintf()
  # or vsnprintf() return -1 instead of number of characters which would
  # have been written to the final string if enough space had been available.
@@ -88,3 +88,16 @@ index 7f8415140..e77dba75e 100644
  if test $ac_cv_snprintf_returns_bogus = yes; then
  	SNPRINTF_RETURNS_BOGUS=UnfortunatelyYes
  else
+diff --git a/run-command.c b/run-command.c
+index 31fc5ea86..53b65610f 100644
+--- a/run-command.c
++++ b/run-command.c
+@@ -731,7 +731,7 @@ int start_command(struct child_process *cmd)
+ 		 */
+ 		execve(argv.argv[1], (char *const *) argv.argv + 1,
+ 		       (char *const *) childenv);
+-		if (errno == ENOEXEC)
++		if (errno == ENOEXEC || errno == EPERM)
+ 			execve(argv.argv[0], (char *const *) argv.argv,
+ 			       (char *const *) childenv);
+ 
