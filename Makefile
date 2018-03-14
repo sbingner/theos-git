@@ -7,6 +7,7 @@ include $(THEOS)/makefiles/common.mk
 CPROJ = git
 git_TAG = v2.16.2
 
+# You need to fix this to point to a valid curl
 CURL = /Users/sam/source/theos-curl/.theos/_/usr
 CFGOPTS = --host=$(subst arm64,aarch64,$(ARCH))-apple-iphoneos --prefix=/usr --with-curl=$(CURL)
 CC = "xcrun -sdk iphoneos clang"
@@ -17,7 +18,6 @@ LDFLAGS = -isysroot $(SYSROOT) $(SDKFLAGS) $(VERSIONFLAGS) $(LEGACYFLAGS) -multi
 MAKEFLAGS = NO_DARWIN_PORTS=1 NO_FINK=1 NO_INSTALL_HARDLINKS=1 -j16
 
 SIGN_BINS = $(shell find $(THEOS_STAGING_DIR) -type f -perm +111)
-SIGN_LIBS = $(shell find $(THEOS_STAGING_DIR) -name *.so)
 
 ARCH = $(basename $@)
 BUILD = $(ARCH).$(CPROJ)build
@@ -74,17 +74,11 @@ staged: $(foreach ARCH,$(ARCHS), $(ARCH).staged)
 	done$(ECHO_END)
 	@echo done.
 	
-#$(ECHO_NOTHING)$(foreach FILE,$(SIGN_BINS),file -h -b --mime $(FILE) | grep -q "charset=binary" && ldid -Sent.xml $(FILE) || true;)$(ECHO_END)
 after-stage:: staged
 	@echo -n Signing binaries...
 	$(ECHO_NOTHING)set -e ;\
 	BINS=$$(for file in $(SIGN_BINS); do file -h -b --mime $$file | grep -q "charset=binary" && echo $$file || true; done) ;\
 	for file in $$BINS; do ldid -Sent.xml $$file; done;$(ECHO_END)
-	@echo done.
-	@echo -n Signing libraries...
-	$(ECHO_NOTHING)set -e ;\
-	BINS=$$(for file in $(SIGN_LIBS); do file -h -b --mime $$file | grep -q "charset=binary" && echo $$file || true; done) ;\
-	for file in $$BINS; do ldid -S $$file; done;$(ECHO_END)
 	@echo done.
 
 after-clean::
